@@ -122,9 +122,7 @@ function App() {
   const [page, setPage] = useState('languages'); // 'languages' | 'englishMessages' | 'tutorial'
 
   const handleSelectLanguage = (language) => {
-    if (language.englishName === 'English') {
-      setPage('englishMessages');
-    }
+    setPage('englishMessages');
   };
 
   const handleOpenTutorial = (event) => {
@@ -146,7 +144,7 @@ function App() {
 
   return (
     <div className="min-h-screen bg-white text-slate-900">
-      <header className="border-b border-slate-200 bg-white/95 backdrop-blur">
+      <header className="border-b border-slate-800 bg-gradient-to-b from-slate-950 via-slate-900 to-slate-950 text-slate-50 shadow-sm">
         <div className="mx-auto flex max-w-7xl items-center justify-between gap-4 px-4 py-5 text-sm md:px-6 lg:px-10">
           <div className="flex items-center gap-4">
             <img
@@ -156,20 +154,20 @@ function App() {
             />
           </div>
           <div className="flex flex-col items-end gap-1 text-[11px] sm:flex-row sm:items-center sm:gap-3">
-            <p className="text-slate-500">
+            <p className="text-slate-300">
               94 translated language names from around the world.
             </p>
             <a
               href="#tutorial"
               onClick={handleOpenTutorial}
-              className="inline-flex items-center justify-center gap-1.5 rounded-full bg-sky-600 px-3 py-1 font-semibold text-white shadow-sm hover:bg-sky-500"
+              className="inline-flex items-center justify-center gap-1.5 rounded-full bg-sky-500 px-3 py-1 font-semibold text-slate-950 shadow-sm hover:bg-sky-400"
             >
               <i className="ri-question-line text-xs" />
               Tutorial
             </a>
             <a
               href="/translators/login"
-              className="inline-flex items-center justify-center rounded-full border border-slate-200 px-3 py-1 font-medium text-slate-700 shadow-sm hover:border-sky-500 hover:text-sky-700"
+              className="inline-flex items-center justify-center rounded-full border border-slate-600 px-3 py-1 font-medium text-slate-100 shadow-sm hover:border-sky-400 hover:text-white"
             >
               Translators login
             </a>
@@ -180,6 +178,43 @@ function App() {
       <main className="mx-auto max-w-7xl px-4 py-6 md:px-6 lg:px-10">
         {content}
       </main>
+
+      <footer className="mt-8 border-t border-slate-200 bg-slate-50">
+        <div className="mx-auto flex max-w-7xl flex-col gap-3 px-4 py-6 text-xs text-slate-500 md:flex-row md:items-center md:justify-between md:px-6 lg:px-10">
+          <p className="text-[11px]">
+            Message Hub applications help you study the Message and Bible on web, desktop and mobile.
+          </p>
+          <div className="flex flex-wrap items-center gap-3">
+            <a
+              href="https://www.lovedivinefellowship.com/software/"
+              target="_blank"
+              rel="noreferrer"
+              className="inline-flex items-center gap-1.5 rounded-full border border-slate-200 bg-white px-3 py-1 font-medium text-slate-700 shadow-sm hover:border-sky-500 hover:text-sky-700"
+            >
+              <i className="ri-computer-line text-xs" />
+              Desktop (OpenMessageView)
+            </a>
+            <a
+              href="https://apps.apple.com/ca/app/the-message-hub/id1489254894"
+              target="_blank"
+              rel="noreferrer"
+              className="inline-flex items-center gap-1.5 rounded-full border border-slate-200 bg-white px-3 py-1 font-medium text-slate-700 shadow-sm hover:border-sky-500 hover:text-sky-700"
+            >
+              <i className="ri-apple-fill text-xs" />
+              iOS app
+            </a>
+            <a
+              href="https://play.google.com/store/apps/details?id=info.messagehub.search"
+              target="_blank"
+              rel="noreferrer"
+              className="inline-flex items-center gap-1.5 rounded-full border border-slate-200 bg-white px-3 py-1 font-medium text-slate-700 shadow-sm hover:border-sky-500 hover:text-sky-700"
+            >
+              <i className="ri-google-play-fill text-xs" />
+              Android app
+            </a>
+          </div>
+        </div>
+      </footer>
     </div>
   );
 }
