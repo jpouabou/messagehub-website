@@ -120,9 +120,16 @@ function countryCodeToFlagEmoji(code) {
 
 function App() {
   const [page, setPage] = useState('languages'); // 'languages' | 'englishMessages' | 'tutorial'
+  const [theme, setTheme] = useState(() => {
+    if (typeof window === 'undefined') return 'light';
+    const stored = window.localStorage.getItem('mh-theme');
+    return stored === 'dark' ? 'dark' : 'light';
+  });
+  const [navOpen, setNavOpen] = useState(false);
 
   const handleSelectLanguage = (language) => {
     setPage('englishMessages');
+    setNavOpen(false);
   };
 
   const handleOpenTutorial = (event) => {
@@ -131,6 +138,18 @@ function App() {
     }
     setPage('tutorial');
     window.scrollTo({ top: 0, behavior: 'smooth' });
+    setNavOpen(false);
+  };
+
+  useEffect(() => {
+    window.localStorage.setItem('mh-theme', theme);
+    document.documentElement.classList.toggle('dark', theme === 'dark');
+    const meta = document.querySelector('meta[name="theme-color"]');
+    if (meta) meta.setAttribute('content', theme === 'dark' ? '#020617' : '#ffffff');
+  }, [theme]);
+
+  const toggleTheme = () => {
+    setTheme((current) => (current === 'light' ? 'dark' : 'light'));
   };
 
   let content;
@@ -143,7 +162,9 @@ function App() {
   }
 
   return (
-    <div className="min-h-screen bg-white text-slate-900">
+    <div
+      className="min-h-screen bg-white text-slate-900 dark:bg-slate-950 dark:text-slate-50"
+    >
       <header className="border-b border-slate-800 bg-gradient-to-b from-slate-950 via-slate-900 to-slate-950 text-slate-50 shadow-sm">
         <div className="mx-auto flex max-w-7xl items-center justify-between gap-4 px-4 py-5 text-sm md:px-6 lg:px-10">
           <div className="flex items-center gap-4">
@@ -157,29 +178,95 @@ function App() {
             <p className="text-slate-300">
               94 translated language names from around the world.
             </p>
+            <button
+              type="button"
+              onClick={toggleTheme}
+              className="inline-flex h-7 w-7 items-center justify-center rounded-full border border-slate-600 bg-slate-950/70 text-slate-100 shadow-sm hover:border-sky-400 hover:text-white"
+              aria-label={theme === 'light' ? 'Switch to dark mode' : 'Switch to light mode'}
+              title={theme === 'light' ? 'Dark mode' : 'Light mode'}
+            >
+              <i className={theme === 'light' ? 'ri-moon-line text-xs' : 'ri-sun-line text-xs'} />
+            </button>
             <a
               href="#tutorial"
               onClick={handleOpenTutorial}
-              className="inline-flex items-center justify-center gap-1.5 rounded-full bg-sky-500 px-3 py-1 font-semibold text-slate-950 shadow-sm hover:bg-sky-400"
+              className="hidden items-center justify-center gap-1.5 rounded-full bg-sky-500 px-3 py-1 font-semibold text-slate-950 shadow-sm hover:bg-sky-400 sm:inline-flex"
             >
               <i className="ri-question-line text-xs" />
               Tutorial
             </a>
             <a
+              href="https://messagehub-translation-map.vercel.app/"
+              target="_blank"
+              rel="noreferrer"
+              className="hidden items-center justify-center gap-1.5 rounded-full border border-slate-500 px-3 py-1 font-medium text-slate-100 shadow-sm hover:border-sky-400 hover:text-white sm:inline-flex"
+            >
+              <i className="ri-map-pin-line text-xs" />
+              View state of translations
+            </a>
+            <a
               href="/translators/login"
-              className="inline-flex items-center justify-center rounded-full border border-slate-600 px-3 py-1 font-medium text-slate-100 shadow-sm hover:border-sky-400 hover:text-white"
+              className="hidden items-center justify-center rounded-full border border-slate-600 px-3 py-1 font-medium text-slate-100 shadow-sm hover:border-sky-400 hover:text-white sm:inline-flex"
             >
               Translators login
             </a>
+            <button
+              type="button"
+              onClick={() => setNavOpen((open) => !open)}
+              className="inline-flex h-8 w-8 items-center justify-center rounded-full border border-slate-600 bg-slate-950/70 text-slate-100 shadow-sm hover:border-sky-400 hover:text-white sm:hidden"
+              aria-label={navOpen ? 'Close menu' : 'Open menu'}
+            >
+              <i className={navOpen ? 'ri-close-line text-base' : 'ri-menu-line text-base'} />
+            </button>
           </div>
         </div>
       </header>
 
-      <main className="mx-auto max-w-7xl px-4 py-6 md:px-6 lg:px-10">
+      {navOpen && (
+        <div className="border-b border-slate-800 bg-slate-950/98 px-4 py-3 text-[11px] text-slate-100 sm:hidden">
+          <div className="mx-auto flex max-w-7xl flex-col gap-2">
+            <button
+              type="button"
+              onClick={handleOpenTutorial}
+              className="inline-flex items-center justify-between rounded-full bg-sky-500 px-3 py-2 font-semibold text-slate-950 shadow-sm hover:bg-sky-400"
+            >
+              <span className="flex items-center gap-1.5">
+                <i className="ri-question-line text-xs" />
+                Tutorial
+              </span>
+              <i className="ri-arrow-right-line text-[10px]" />
+            </button>
+            <a
+              href="https://messagehub-translation-map.vercel.app/"
+              target="_blank"
+              rel="noreferrer"
+              className="inline-flex items-center justify-between rounded-full border border-slate-600 bg-slate-900 px-3 py-2 font-medium text-slate-100 hover:border-sky-400"
+            >
+              <span className="flex items-center gap-1.5">
+                <i className="ri-map-pin-line text-xs" />
+                View state of translations
+              </span>
+              <i className="ri-arrow-right-up-line text-[10px]" />
+            </a>
+            <a
+              href="/translators/login"
+              className="inline-flex items-center justify-between rounded-full border border-slate-600 bg-slate-900 px-3 py-2 font-medium text-slate-100 hover:border-sky-400"
+            >
+              <span className="flex items-center gap-1.5">
+                <i className="ri-login-circle-line text-xs" />
+                Translators login
+              </span>
+              <i className="ri-arrow-right-line text-[10px]" />
+            </a>
+          </div>
+        </div>
+      )}
+
+      <main className="mx-auto max-w-7xl bg-white px-4 py-6 text-slate-900 dark:bg-slate-950 dark:text-slate-100 md:px-6 lg:px-10">
         {content}
       </main>
 
-      <footer className="mt-8 border-t border-slate-200 bg-slate-50">
+      <footer className="mt-8 border-t border-slate-200 bg-slate-50 dark:border-slate-800 dark:bg-slate-950 dark:text-slate-400">
         <div className="mx-auto flex max-w-7xl flex-col gap-3 px-4 py-6 text-xs text-slate-500 md:flex-row md:items-center md:justify-between md:px-6 lg:px-10">
           <p className="text-[11px]">
             Message Hub applications help you study the Message and Bible on web, desktop and mobile.
@@ -189,7 +276,7 @@ function App() {
               href="https://www.lovedivinefellowship.com/software/"
               target="_blank"
               rel="noreferrer"
-              className="inline-flex items-center gap-1.5 rounded-full border border-slate-200 bg-white px-3 py-1 font-medium text-slate-700 shadow-sm hover:border-sky-500 hover:text-sky-700"
+              className="inline-flex items-center gap-1.5 rounded-full border border-slate-200 bg-white px-3 py-1 font-medium text-slate-700 shadow-sm hover:border-sky-500 hover:text-sky-700 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-200 dark:hover:border-sky-400 dark:hover:text-sky-300"
             >
               <i className="ri-computer-line text-xs" />
               Desktop (OpenMessageView)
@@ -198,7 +285,7 @@ function App() {
               href="https://apps.apple.com/ca/app/the-message-hub/id1489254894"
               target="_blank"
               rel="noreferrer"
-              className="inline-flex items-center gap-1.5 rounded-full border border-slate-200 bg-white px-3 py-1 font-medium text-slate-700 shadow-sm hover:border-sky-500 hover:text-sky-700"
+              className="inline-flex items-center gap-1.5 rounded-full border border-slate-200 bg-white px-3 py-1 font-medium text-slate-700 shadow-sm hover:border-sky-500 hover:text-sky-700 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-200 dark:hover:border-sky-400 dark:hover:text-sky-300"
             >
               <i className="ri-apple-fill text-xs" />
               iOS app
@@ -207,7 +294,7 @@ function App() {
               href="https://play.google.com/store/apps/details?id=info.messagehub.search"
               target="_blank"
               rel="noreferrer"
-              className="inline-flex items-center gap-1.5 rounded-full border border-slate-200 bg-white px-3 py-1 font-medium text-slate-700 shadow-sm hover:border-sky-500 hover:text-sky-700"
+              className="inline-flex items-center gap-1.5 rounded-full border border-slate-200 bg-white px-3 py-1 font-medium text-slate-700 shadow-sm hover:border-sky-500 hover:text-sky-700 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-200 dark:hover:border-sky-400 dark:hover:text-sky-300"
             >
               <i className="ri-google-play-fill text-xs" />
               Android app
@@ -229,30 +316,30 @@ function LanguagesGrid({ onSelectLanguage }) {
     <section aria-labelledby="languages-title">
       <div className="mb-4 flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
         <div>
-          <p className="text-sm font-semibold uppercase tracking-[0.16em] text-slate-500">
+          <p className="text-sm font-semibold uppercase tracking-[0.16em] text-slate-500 dark:text-slate-400">
             Languages
           </p>
           <h2
             id="languages-title"
-            className="mt-1 text-2xl font-semibold tracking-tight text-slate-900 sm:text-3xl"
+            className="mt-1 text-2xl font-semibold tracking-tight text-slate-900 dark:text-slate-100 sm:text-3xl"
           >
             Select a language.
           </h2>
         </div>
         <div className="flex flex-col items-end gap-3 sm:flex-row sm:items-center">
-          <span className="inline-flex items-center gap-1 rounded-full bg-slate-100 px-3 py-1.5 text-[12px] text-slate-500">
+          <span className="inline-flex items-center gap-1 rounded-full bg-slate-100 px-3 py-1.5 text-[12px] text-slate-500 dark:bg-slate-800 dark:text-slate-400">
             <span className="h-1.5 w-1.5 rounded-full bg-emerald-400" />
             Tap a language name to get started.
           </span>
           <div className="flex w-full flex-col gap-2 sm:w-auto sm:flex-row sm:items-center">
-            <div className="inline-flex items-center rounded-full border border-slate-200 bg-white p-1 text-xs text-slate-600 shadow-sm">
+            <div className="inline-flex items-center rounded-full border border-slate-200 bg-white p-1 text-xs text-slate-600 shadow-sm dark:border-slate-700 dark:bg-slate-800 dark:text-slate-300">
               <button
                 type="button"
                 onClick={() => setView('translated')}
                 className={`rounded-full px-4 py-1.5 transition ${
                   view === 'translated'
                     ? 'bg-sky-600 text-white shadow-sm'
-                    : 'bg-transparent text-slate-600 hover:text-slate-900'
+                    : 'bg-transparent text-slate-600 hover:text-slate-900 dark:text-slate-400 dark:hover:text-slate-100'
                 }`}
               >
                 Translated names
@@ -263,7 +350,7 @@ function LanguagesGrid({ onSelectLanguage }) {
                 className={`rounded-full px-4 py-1.5 transition ${
                   view === 'english'
                     ? 'bg-sky-600 text-white shadow-sm'
-                    : 'bg-transparent text-slate-600 hover:text-slate-900'
+                    : 'bg-transparent text-slate-600 hover:text-slate-900 dark:text-slate-400 dark:hover:text-slate-100'
                 }`}
               >
                 English names
@@ -272,7 +359,7 @@ function LanguagesGrid({ onSelectLanguage }) {
             <button
               type="button"
               onClick={() => setCountryModalOpen(true)}
-              className="inline-flex w-full items-center justify-center gap-1.5 rounded-full border border-slate-200 bg-white px-4 py-1.5 text-xs font-medium text-slate-700 shadow-sm hover:border-sky-500 hover:text-sky-700 sm:w-auto"
+              className="inline-flex w-full items-center justify-center gap-1.5 rounded-full border border-slate-200 bg-white px-4 py-1.5 text-xs font-medium text-slate-700 shadow-sm hover:border-sky-500 hover:text-sky-700 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-200 dark:hover:border-sky-400 dark:hover:text-sky-300 sm:w-auto"
             >
               <i className="ri-earth-line text-sm" />
               View by country
@@ -281,7 +368,7 @@ function LanguagesGrid({ onSelectLanguage }) {
         </div>
       </div>
 
-      <div className="rounded-2xl border border-slate-200 bg-slate-50 p-4 shadow-sm shadow-slate-200/60">
+      <div className="rounded-2xl border border-slate-200 bg-slate-50 p-4 shadow-sm shadow-slate-200/60 dark:border-slate-700 dark:bg-slate-800 dark:shadow-slate-900/40">
         <div className="grid gap-3 text-sm sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-5 xl:grid-cols-6 2xl:grid-cols-7">
           {languages.map((language) => (
             <button
@@ -293,7 +380,7 @@ function LanguagesGrid({ onSelectLanguage }) {
               }}
               type="button"
               onClick={() => onSelectLanguage && onSelectLanguage(language)}
-              className="rounded-full border border-slate-200 bg-white px-4 py-2 text-left text-slate-800 whitespace-nowrap transition hover:-translate-y-0.5 hover:border-sky-500/70 hover:bg-sky-50 hover:text-sky-900"
+              className="rounded-full border border-slate-200 bg-white px-4 py-2 text-left text-slate-800 whitespace-nowrap transition hover:-translate-y-0.5 hover:border-sky-500/70 hover:bg-sky-50 hover:text-sky-900 dark:border-slate-600 dark:bg-slate-800 dark:text-slate-200 dark:hover:border-sky-400 dark:hover:bg-sky-900/50 dark:hover:text-sky-100"
             >
               {view === 'translated' ? language.translatedName : language.englishName}
             </button>
@@ -313,13 +400,20 @@ function LanguagesGrid({ onSelectLanguage }) {
             }
 
             if (button) {
-              button.classList.add('ring-2', 'ring-sky-500', 'ring-offset-2', 'ring-offset-slate-50');
+              button.classList.add(
+                'ring-2',
+                'ring-sky-500',
+                'ring-offset-2',
+                'ring-offset-slate-50',
+                'dark:ring-offset-slate-800'
+              );
               setTimeout(() => {
                 button.classList.remove(
                   'ring-2',
                   'ring-sky-500',
                   'ring-offset-2',
-                  'ring-offset-slate-50'
+                  'ring-offset-slate-50',
+                  'dark:ring-offset-slate-800'
                 );
               }, 1600);
             }
@@ -388,11 +482,11 @@ function EnglishMessagesPage({ onBack }) {
 
   return (
     <section aria-labelledby="english-messages-title" className="space-y-6">
-      <nav className="flex flex-wrap items-center gap-3 text-xs text-slate-500">
+      <nav className="flex flex-wrap items-center gap-3 text-xs text-slate-500 dark:text-slate-400">
         <button
           type="button"
           onClick={onBack}
-          className="inline-flex items-center gap-1 rounded-full border border-slate-200 bg-white px-3 py-1 font-medium text-slate-600 hover:border-sky-500 hover:text-sky-700"
+          className="inline-flex items-center gap-1 rounded-full border border-slate-200 bg-white px-3 py-1 font-medium text-slate-600 hover:border-sky-500 hover:text-sky-700 dark:border-slate-600 dark:bg-slate-800 dark:text-slate-300 dark:hover:border-sky-400 dark:hover:text-sky-300"
         >
           <i className="ri-arrow-left-line text-xs" />
           Back to languages
@@ -402,51 +496,51 @@ function EnglishMessagesPage({ onBack }) {
       <div>
         <h2
           id="english-messages-title"
-          className="text-2xl font-semibold tracking-tight text-slate-900 sm:text-3xl"
+          className="text-2xl font-semibold tracking-tight text-slate-900 dark:text-slate-100 sm:text-3xl"
         >
           English Messages
         </h2>
       </div>
 
       <div className="grid gap-4 sm:grid-cols-3">
-        <article className="flex items-center gap-3 rounded-2xl border border-slate-200 bg-white p-4 shadow-sm">
-          <div className="flex h-10 w-10 items-center justify-center rounded-full bg-sky-50 text-sky-600">
+        <article className="flex items-center gap-3 rounded-2xl border border-slate-200 bg-white p-4 shadow-sm dark:border-slate-700 dark:bg-slate-800">
+          <div className="flex h-10 w-10 items-center justify-center rounded-full bg-sky-50 text-sky-600 dark:bg-sky-900/50 dark:text-sky-400">
             <i className="ri-printer-line text-lg" />
           </div>
           <div>
-            <p className="text-sm font-semibold text-slate-900">Printed Books</p>
-            <p className="text-xs text-slate-500">View printed Message books in English.</p>
+            <p className="text-sm font-semibold text-slate-900 dark:text-slate-100">Printed Books</p>
+            <p className="text-xs text-slate-500 dark:text-slate-400">View printed Message books in English.</p>
           </div>
         </article>
-        <article className="flex items-center gap-3 rounded-2xl border border-slate-200 bg-white p-4 shadow-sm">
-          <div className="flex h-10 w-10 items-center justify-center rounded-full bg-emerald-50 text-emerald-600">
+        <article className="flex items-center gap-3 rounded-2xl border border-slate-200 bg-white p-4 shadow-sm dark:border-slate-700 dark:bg-slate-800">
+          <div className="flex h-10 w-10 items-center justify-center rounded-full bg-emerald-50 text-emerald-600 dark:bg-emerald-900/50 dark:text-emerald-400">
             <i className="ri-book-open-line text-lg" />
           </div>
           <div>
-            <p className="text-sm font-semibold text-slate-900">Read Online</p>
-            <p className="text-xs text-slate-500">Read the English Messages directly in your browser.</p>
+            <p className="text-sm font-semibold text-slate-900 dark:text-slate-100">Read Online</p>
+            <p className="text-xs text-slate-500 dark:text-slate-400">Read the English Messages directly in your browser.</p>
           </div>
         </article>
-        <article className="flex items-center gap-3 rounded-2xl border border-slate-200 bg-white p-4 shadow-sm">
-          <div className="flex h-10 w-10 items-center justify-center rounded-full bg-amber-50 text-amber-600">
+        <article className="flex items-center gap-3 rounded-2xl border border-slate-200 bg-white p-4 shadow-sm dark:border-slate-700 dark:bg-slate-800">
+          <div className="flex h-10 w-10 items-center justify-center rounded-full bg-amber-50 text-amber-600 dark:bg-amber-900/50 dark:text-amber-400">
             <i className="ri-volume-up-line text-lg" />
           </div>
           <div>
-            <p className="text-sm font-semibold text-slate-900">Audio</p>
-            <p className="text-xs text-slate-500">Access audio recordings of the Messages.</p>
+            <p className="text-sm font-semibold text-slate-900 dark:text-slate-100">Audio</p>
+            <p className="text-xs text-slate-500 dark:text-slate-400">Access audio recordings of the Messages.</p>
           </div>
         </article>
       </div>
 
-      <div className="rounded-2xl border border-slate-200 bg-white p-4 shadow-sm">
-        <p className="mb-3 text-sm text-slate-700">
+      <div className="rounded-2xl border border-slate-200 bg-white p-4 shadow-sm dark:border-slate-700 dark:bg-slate-800">
+        <p className="mb-3 text-sm text-slate-700 dark:text-slate-300">
           Search for a message by typing its reference number, title and/or location:
         </p>
         <form onSubmit={(e) => e.preventDefault()} className="flex flex-col gap-3 text-sm sm:flex-row sm:items-center">
           <div className="flex-1">
             <input
               type="text"
-              className="w-full rounded-lg border border-slate-200 px-3 py-2 text-sm text-slate-900 placeholder:text-slate-400 focus:border-sky-500 focus:outline-none focus:ring-1 focus:ring-sky-500"
+              className="w-full rounded-lg border border-slate-200 px-3 py-2 text-sm text-slate-900 placeholder:text-slate-400 focus:border-sky-500 focus:outline-none focus:ring-1 focus:ring-sky-500 dark:border-slate-600 dark:bg-slate-900 dark:text-slate-100 dark:placeholder:text-slate-500 dark:focus:border-sky-400 dark:focus:ring-sky-400"
               placeholder="e.g. 65-0427, The Choosing of a Bride, Jeffersonville…"
               value={query}
               onChange={(e) => setQuery(e.target.value)}
@@ -456,7 +550,7 @@ function EnglishMessagesPage({ onBack }) {
             <button
               type="button"
               onClick={handleClear}
-              className="inline-flex items-center justify-center rounded-full border border-slate-200 px-3 py-2 text-xs font-medium text-slate-600 hover:border-slate-300"
+              className="inline-flex items-center justify-center rounded-full border border-slate-200 px-3 py-2 text-xs font-medium text-slate-600 hover:border-slate-300 dark:border-slate-600 dark:text-slate-300 dark:hover:border-slate-500"
             >
               Clear
             </button>
@@ -468,15 +562,15 @@ function EnglishMessagesPage({ onBack }) {
             </button>
           </div>
         </form>
-        <p className="mt-3 text-xs text-slate-500">
+        <p className="mt-3 text-xs text-slate-500 dark:text-slate-400">
           Available formats will be listed once you select a message from the results.
         </p>
       </div>
 
-      <div className="rounded-2xl border border-slate-200 bg-white p-4 shadow-sm">
+      <div className="rounded-2xl border border-slate-200 bg-white p-4 shadow-sm dark:border-slate-700 dark:bg-slate-800">
         <div className="mb-3 flex items-center justify-between gap-3">
-          <p className="text-sm font-semibold text-slate-900">English Messages</p>
-          <p className="text-xs text-slate-500">
+          <p className="text-sm font-semibold text-slate-900 dark:text-slate-100">English Messages</p>
+          <p className="text-xs text-slate-500 dark:text-slate-400">
             Showing {results.length} of {ENGLISH_MESSAGES_LIST.length} messages.
           </p>
         </div>
@@ -484,23 +578,23 @@ function EnglishMessagesPage({ onBack }) {
         {/* Mobile: card list */}
         <div className="space-y-3 md:hidden">
           {results.length === 0 ? (
-            <p className="px-1 py-2 text-center text-xs text-slate-500">
+            <p className="px-1 py-2 text-center text-xs text-slate-500 dark:text-slate-400">
               No messages found. Try a different reference, title or location.
             </p>
           ) : (
             results.map((msg) => (
               <article
                 key={msg.ref}
-                className="rounded-xl border border-slate-200 bg-slate-50 p-3 text-xs"
+                className="rounded-xl border border-slate-200 bg-slate-50 p-3 text-xs dark:border-slate-600 dark:bg-slate-900"
               >
                 <div className="mb-1 flex items-center justify-between gap-2">
-                  <span className="font-mono text-[11px] font-semibold text-slate-700">
+                  <span className="font-mono text-[11px] font-semibold text-slate-700 dark:text-slate-300">
                     {msg.ref}
                   </span>
                   <div className="flex gap-1.5">
                     <button
                       type="button"
-                      className="inline-flex h-7 w-7 items-center justify-center rounded-full border border-slate-200 bg-white"
+                      className="inline-flex h-7 w-7 items-center justify-center rounded-full border border-slate-200 bg-white dark:border-slate-600 dark:bg-slate-800"
                       aria-label="View printable version"
                       title="View printable book"
                       onClick={() => openPrintModal(msg)}
@@ -509,7 +603,7 @@ function EnglishMessagesPage({ onBack }) {
                     </button>
                     <button
                       type="button"
-                      className="inline-flex h-7 w-7 items-center justify-center rounded-full border border-slate-200 bg-white"
+                      className="inline-flex h-7 w-7 items-center justify-center rounded-full border border-slate-200 bg-white dark:border-slate-600 dark:bg-slate-800"
                       aria-label="Read message online"
                       title="Read message online"
                     >
@@ -517,7 +611,7 @@ function EnglishMessagesPage({ onBack }) {
                     </button>
                     <button
                       type="button"
-                      className="inline-flex h-7 w-7 items-center justify-center rounded-full border border-slate-200 bg-white"
+                      className="inline-flex h-7 w-7 items-center justify-center rounded-full border border-slate-200 bg-white dark:border-slate-600 dark:bg-slate-800"
                       aria-label="Listen to audio"
                       title="Listen to audio"
                     >
@@ -525,8 +619,8 @@ function EnglishMessagesPage({ onBack }) {
                     </button>
                   </div>
                 </div>
-                <p className="text-[11px] font-semibold text-slate-900">{msg.title}</p>
-                <p className="mt-0.5 text-[11px] text-slate-500">{msg.location}</p>
+                <p className="text-[11px] font-semibold text-slate-900 dark:text-slate-100">{msg.title}</p>
+                <p className="mt-0.5 text-[11px] text-slate-500 dark:text-slate-400">{msg.location}</p>
               </article>
             ))
           )}
@@ -537,7 +631,7 @@ function EnglishMessagesPage({ onBack }) {
           <div className="overflow-x-auto">
             <table className="min-w-full border-collapse text-sm">
               <thead>
-                <tr className="border-b border-slate-200 bg-slate-50 text-left text-xs font-semibold uppercase tracking-wide text-slate-500">
+                <tr className="border-b border-slate-200 bg-slate-50 text-left text-xs font-semibold uppercase tracking-wide text-slate-500 dark:border-slate-600 dark:bg-slate-900 dark:text-slate-400">
                   <th className="px-3 py-2">Ref #</th>
                   <th className="px-3 py-2">Title</th>
                   <th className="px-3 py-2">Location</th>
@@ -548,7 +642,7 @@ function EnglishMessagesPage({ onBack }) {
                 {results.length === 0 ? (
                   <tr>
                     <td
-                      className="px-3 py-4 text-center text-xs text-slate-500"
+                      className="px-3 py-4 text-center text-xs text-slate-500 dark:text-slate-400"
                       colSpan={4}
                     >
                       No messages found. Try a different reference, title or location.
@@ -556,19 +650,19 @@ function EnglishMessagesPage({ onBack }) {
                   </tr>
                 ) : (
                   results.map((msg) => (
-                    <tr key={msg.ref} className="border-b border-slate-100 last:border-0">
-                      <td className="px-3 py-2 align-top font-mono text-xs text-slate-700">
+                    <tr key={msg.ref} className="border-b border-slate-100 last:border-0 dark:border-slate-700">
+                      <td className="px-3 py-2 align-top font-mono text-xs text-slate-700 dark:text-slate-300">
                         {msg.ref}
                       </td>
-                      <td className="px-3 py-2 align-top text-slate-900">{msg.title}</td>
-                      <td className="px-3 py-2 align-top text-xs text-slate-600">
+                      <td className="px-3 py-2 align-top text-slate-900 dark:text-slate-100">{msg.title}</td>
+                      <td className="px-3 py-2 align-top text-xs text-slate-600 dark:text-slate-400">
                         {msg.location}
                       </td>
                       <td className="px-3 py-2 align-top">
-                        <div className="flex justify-end gap-1.5 text-slate-500">
+                        <div className="flex justify-end gap-1.5 text-slate-500 dark:text-slate-400">
                           <button
                             type="button"
-                            className="inline-flex h-8 w-8 items-center justify-center rounded-full border border-slate-200 bg-white hover:border-slate-300"
+                            className="inline-flex h-8 w-8 items-center justify-center rounded-full border border-slate-200 bg-white hover:border-slate-300 dark:border-slate-600 dark:bg-slate-800 dark:hover:border-slate-500"
                             aria-label="View printable version"
                             title="View printable book"
                             onClick={() => openPrintModal(msg)}
@@ -577,7 +671,7 @@ function EnglishMessagesPage({ onBack }) {
                           </button>
                           <button
                             type="button"
-                            className="inline-flex h-8 w-8 items-center justify-center rounded-full border border-slate-200 bg-white hover:border-slate-300"
+                            className="inline-flex h-8 w-8 items-center justify-center rounded-full border border-slate-200 bg-white hover:border-slate-300 dark:border-slate-600 dark:bg-slate-800 dark:hover:border-slate-500"
                             aria-label="Read message online"
                             title="Read message online"
                           >
@@ -585,7 +679,7 @@ function EnglishMessagesPage({ onBack }) {
                           </button>
                           <button
                             type="button"
-                            className="inline-flex h-8 w-8 items-center justify-center rounded-full border border-slate-200 bg-white hover:border-slate-300"
+                            className="inline-flex h-8 w-8 items-center justify-center rounded-full border border-slate-200 bg-white hover:border-slate-300 dark:border-slate-600 dark:bg-slate-800 dark:hover:border-slate-500"
                             aria-label="Listen to audio"
                             title="Listen to audio"
                           >
@@ -604,7 +698,7 @@ function EnglishMessagesPage({ onBack }) {
 
       {printModalOpen && printMessage && (
         <div
-          className="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/40 px-4"
+          className="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/40 px-4 dark:bg-slate-950/60"
           onClick={(e) => {
             if (e.target === e.currentTarget) {
               closePrintModal();
@@ -612,24 +706,24 @@ function EnglishMessagesPage({ onBack }) {
           }}
         >
           <div
-            className="w-full max-w-2xl rounded-2xl bg-white shadow-xl"
+            className="w-full max-w-2xl rounded-2xl bg-white shadow-xl dark:border dark:border-slate-700 dark:bg-slate-900"
             role="dialog"
             aria-modal="true"
             aria-labelledby="print-options-title"
           >
-            <div className="flex items-start justify-between gap-3 border-b border-slate-200 px-5 py-4">
+            <div className="flex items-start justify-between gap-3 border-b border-slate-200 px-5 py-4 dark:border-slate-700">
               <div>
-                <h3 id="print-options-title" className="text-base font-semibold text-slate-900">
+                <h3 id="print-options-title" className="text-base font-semibold text-slate-900 dark:text-slate-100">
                   Print book options
                 </h3>
-                <p className="mt-1 text-xs text-slate-500">
+                <p className="mt-1 text-xs text-slate-500 dark:text-slate-400">
                   {printMessage.ref} – {printMessage.title}
                 </p>
               </div>
               <button
                 type="button"
                 onClick={closePrintModal}
-                className="inline-flex h-8 w-8 items-center justify-center rounded-full border border-slate-200 text-slate-500 hover:border-slate-300 hover:text-slate-700"
+                className="inline-flex h-8 w-8 items-center justify-center rounded-full border border-slate-200 text-slate-500 hover:border-slate-300 hover:text-slate-700 dark:border-slate-600 dark:text-slate-400 dark:hover:border-slate-500 dark:hover:text-slate-200"
                 aria-label="Close"
               >
                 <i className="ri-close-line text-sm" />
@@ -637,7 +731,7 @@ function EnglishMessagesPage({ onBack }) {
             </div>
             <div className="max-h-[70vh] space-y-4 overflow-y-auto px-5 py-4 text-sm">
               <div>
-                <p className="mb-2 text-xs font-semibold uppercase tracking-[0.14em] text-slate-500">
+                <p className="mb-2 text-xs font-semibold uppercase tracking-[0.14em] text-slate-500 dark:text-slate-400">
                   Metric paper sizes
                 </p>
                 <div className="grid gap-2 sm:grid-cols-3">
@@ -668,8 +762,8 @@ function EnglishMessagesPage({ onBack }) {
                 </div>
               </div>
 
-              <div className="border-t border-slate-100 pt-3">
-                <p className="mb-2 text-xs font-semibold uppercase tracking-[0.14em] text-slate-500">
+              <div className="border-t border-slate-100 pt-3 dark:border-slate-700">
+                <p className="mb-2 text-xs font-semibold uppercase tracking-[0.14em] text-slate-500 dark:text-slate-400">
                   U.S. paper sizes
                 </p>
                 <div className="grid gap-2 sm:grid-cols-3">
@@ -700,8 +794,8 @@ function EnglishMessagesPage({ onBack }) {
                 </div>
               </div>
 
-              <div className="border-t border-slate-100 pt-3">
-                <p className="mb-2 text-xs font-semibold uppercase tracking-[0.14em] text-slate-500">
+              <div className="border-t border-slate-100 pt-3 dark:border-slate-700">
+                <p className="mb-2 text-xs font-semibold uppercase tracking-[0.14em] text-slate-500 dark:text-slate-400">
                   Commercial paper sizes
                 </p>
                 <div className="grid gap-2 sm:grid-cols-2">
@@ -716,10 +810,10 @@ function EnglishMessagesPage({ onBack }) {
                 </div>
               </div>
             </div>
-            <div className="flex items-center justify-between gap-3 border-t border-slate-200 px-5 py-3">
-              <p className="text-xs text-slate-500">
+            <div className="flex items-center justify-between gap-3 border-t border-slate-200 px-5 py-3 dark:border-slate-700">
+              <p className="text-xs text-slate-500 dark:text-slate-400">
                 Selected:{' '}
-                <span className="font-medium text-slate-700">
+                <span className="font-medium text-slate-700 dark:text-slate-200">
                   {getPrintOptionLabel(selectedPrintOption)}
                 </span>
               </p>
@@ -727,7 +821,7 @@ function EnglishMessagesPage({ onBack }) {
                 <button
                   type="button"
                   onClick={closePrintModal}
-                  className="inline-flex items-center justify-center rounded-full border border-slate-200 px-3 py-1.5 text-xs font-medium text-slate-600 hover:border-slate-300"
+                  className="inline-flex items-center justify-center rounded-full border border-slate-200 px-3 py-1.5 text-xs font-medium text-slate-600 hover:border-slate-300 dark:border-slate-600 dark:text-slate-300 dark:hover:border-slate-500"
                 >
                   Cancel
                 </button>
@@ -753,24 +847,24 @@ function PrintOptionCard({ id, label, description, size, selected, onSelect }) {
       onClick={() => onSelect(id)}
       className={`flex h-full w-full flex-col items-start rounded-xl border px-3 py-2 text-left text-xs transition ${
         selected
-          ? 'border-sky-500 bg-sky-50 shadow-sm'
-          : 'border-slate-200 bg-white hover:border-sky-400 hover:bg-sky-50/60'
+          ? 'border-sky-500 bg-sky-50 shadow-sm dark:border-sky-400 dark:bg-sky-900/50'
+          : 'border-slate-200 bg-white hover:border-sky-400 hover:bg-sky-50/60 dark:border-slate-600 dark:bg-slate-800 dark:hover:border-sky-500 dark:hover:bg-sky-900/40'
       }`}
     >
       <div className="mb-1 flex w-full items-center justify-between gap-2">
-        <span className="text-[13px] font-semibold text-slate-900">{label}</span>
+        <span className="text-[13px] font-semibold text-slate-900 dark:text-slate-100">{label}</span>
         <span
           className={`inline-flex h-4 w-4 items-center justify-center rounded-full border text-[10px] ${
             selected
-              ? 'border-sky-500 bg-sky-600 text-white'
-              : 'border-slate-300 bg-white text-slate-400'
+              ? 'border-sky-500 bg-sky-600 text-white dark:border-sky-400 dark:bg-sky-500'
+              : 'border-slate-300 bg-white text-slate-400 dark:border-slate-500 dark:bg-slate-800 dark:text-slate-500'
           }`}
         >
           {selected ? '✓' : ''}
         </span>
       </div>
-      <p className="mb-1 text-[11px] text-slate-500">{description}</p>
-      <p className="text-[11px] font-medium text-slate-700">{size}</p>
+      <p className="mb-1 text-[11px] text-slate-500 dark:text-slate-400">{description}</p>
+      <p className="text-[11px] font-medium text-slate-700 dark:text-slate-300">{size}</p>
     </button>
   );
 }
@@ -803,21 +897,21 @@ function CountryLanguagesModal({ onClose, onSelectLanguage }) {
 
   return (
     <div
-      className="fixed inset-0 z-40 flex items-start justify-center overflow-y-auto bg-slate-900/40 px-4 py-6"
+      className="fixed inset-0 z-40 flex items-start justify-center overflow-y-auto bg-slate-900/40 px-4 py-6 dark:bg-slate-950/60"
       onClick={(e) => {
         if (e.target === e.currentTarget) {
           onClose();
         }
       }}
     >
-      <div className="flex w-full max-w-4xl flex-col overflow-hidden rounded-2xl bg-white shadow-xl md:max-h-[90vh] md:flex-row">
-        <div className="border-b border-slate-200 px-4 py-3 md:border-b-0 md:border-r md:px-5 md:py-4 md:w-1/2">
+      <div className="flex w-full max-w-4xl flex-col overflow-hidden rounded-2xl bg-white shadow-xl dark:border dark:border-slate-700 dark:bg-slate-900 md:max-h-[90vh] md:flex-row">
+        <div className="border-b border-slate-200 px-4 py-3 dark:border-slate-700 md:border-b-0 md:border-r md:px-5 md:py-4 md:w-1/2">
           <div className="mb-3 flex items-center justify-between gap-2">
-            <h2 className="text-sm font-semibold text-slate-900">Select your country</h2>
+            <h2 className="text-sm font-semibold text-slate-900 dark:text-slate-100">Select your country</h2>
             <button
               type="button"
               onClick={onClose}
-              className="inline-flex h-7 w-7 items-center justify-center rounded-full border border-slate-200 text-slate-500 hover:border-slate-300 hover:text-slate-700"
+              className="inline-flex h-7 w-7 items-center justify-center rounded-full border border-slate-200 text-slate-500 hover:border-slate-300 hover:text-slate-700 dark:border-slate-600 dark:text-slate-400 dark:hover:border-slate-500 dark:hover:text-slate-200"
               aria-label="Close"
             >
               <i className="ri-close-line text-xs" />
@@ -826,7 +920,7 @@ function CountryLanguagesModal({ onClose, onSelectLanguage }) {
           <div className="mb-3">
             <input
               type="text"
-              className="w-full rounded-full border border-slate-200 px-3 py-2 text-xs text-slate-900 placeholder:text-slate-400 focus:border-sky-500 focus:outline-none focus:ring-1 focus:ring-sky-500"
+              className="w-full rounded-full border border-slate-200 px-3 py-2 text-xs text-slate-900 placeholder:text-slate-400 focus:border-sky-500 focus:outline-none focus:ring-1 focus:ring-sky-500 dark:border-slate-600 dark:bg-slate-800 dark:text-slate-100 dark:placeholder:text-slate-500 dark:focus:border-sky-400 dark:focus:ring-sky-400"
               placeholder="Search countries…"
               value={query}
               onChange={(e) => setQuery(e.target.value)}
@@ -835,7 +929,7 @@ function CountryLanguagesModal({ onClose, onSelectLanguage }) {
           <div className="max-h-72 space-y-3 overflow-y-auto pr-1 text-xs md:max-h-full">
             {regions.map(([region, countries]) => (
               <div key={region}>
-                <p className="mb-1 text-[10px] font-semibold uppercase tracking-[0.16em] text-slate-400">
+                <p className="mb-1 text-[10px] font-semibold uppercase tracking-[0.16em] text-slate-400 dark:text-slate-500">
                   {region}
                 </p>
                 <div className="space-y-1">
@@ -848,8 +942,8 @@ function CountryLanguagesModal({ onClose, onSelectLanguage }) {
                         onClick={() => setSelectedCountry(country)}
                         className={`flex w-full items-center justify-between rounded-lg px-2.5 py-1.5 text-left transition ${
                           isSelected
-                            ? 'bg-sky-50 text-sky-800'
-                            : 'hover:bg-slate-50 text-slate-700'
+                            ? 'bg-sky-50 text-sky-800 dark:bg-sky-900/50 dark:text-sky-200'
+                            : 'hover:bg-slate-50 text-slate-700 dark:hover:bg-slate-800 dark:text-slate-300'
                         }`}
                       >
                         <span className="flex items-center gap-1.5">
@@ -859,7 +953,7 @@ function CountryLanguagesModal({ onClose, onSelectLanguage }) {
                           <span>{country.name}</span>
                         </span>
                         {isSelected && (
-                          <span className="text-[10px] font-medium text-sky-600">Selected</span>
+                          <span className="text-[10px] font-medium text-sky-600 dark:text-sky-400">Selected</span>
                         )}
                       </button>
                     );
@@ -875,16 +969,16 @@ function CountryLanguagesModal({ onClose, onSelectLanguage }) {
             <>
               <div className="mb-2 flex items-center justify-between gap-2">
                 <div>
-                  <p className="text-xs font-semibold text-slate-900">
+                  <p className="text-xs font-semibold text-slate-900 dark:text-slate-100">
                     Languages in {selectedCountry.name}
                   </p>
-                  <p className="text-[11px] text-slate-500">
+                  <p className="text-[11px] text-slate-500 dark:text-slate-400">
                     Tap a language to jump to it in the main list.
                   </p>
                 </div>
               </div>
               {languagesForSelectedCountry.length === 0 ? (
-                <p className="mt-4 text-[11px] text-slate-500">
+                <p className="mt-4 text-[11px] text-slate-500 dark:text-slate-400">
                   No languages are currently mapped for this country yet.
                 </p>
               ) : (
@@ -894,13 +988,13 @@ function CountryLanguagesModal({ onClose, onSelectLanguage }) {
                       key={language.id}
                       type="button"
                       onClick={() => onSelectLanguage(language)}
-                      className="flex flex-col items-start rounded-xl border border-slate-200 bg-slate-50 px-3 py-2 text-left transition hover:border-sky-500 hover:bg-sky-50"
+                      className="flex flex-col items-start rounded-xl border border-slate-200 bg-slate-50 px-3 py-2 text-left transition hover:border-sky-500 hover:bg-sky-50 dark:border-slate-600 dark:bg-slate-800 dark:hover:border-sky-400 dark:hover:bg-sky-900/50"
                     >
-                      <span className="text-[13px] font-semibold text-slate-900">
+                      <span className="text-[13px] font-semibold text-slate-900 dark:text-slate-100">
                         {language.translatedName}
                       </span>
                       {language.englishName && language.englishName !== language.translatedName && (
-                        <span className="text-[11px] text-slate-500">{language.englishName}</span>
+                        <span className="text-[11px] text-slate-500 dark:text-slate-400">{language.englishName}</span>
                       )}
                     </button>
                   ))}
@@ -908,8 +1002,8 @@ function CountryLanguagesModal({ onClose, onSelectLanguage }) {
               )}
             </>
           ) : (
-            <div className="flex h-full flex-col items-center justify-center text-center text-xs text-slate-500">
-              <i className="ri-earth-line mb-2 text-lg text-slate-400" />
+            <div className="flex h-full flex-col items-center justify-center text-center text-xs text-slate-500 dark:text-slate-400">
+              <i className="ri-earth-line mb-2 text-lg text-slate-400 dark:text-slate-500" />
               <p className="max-w-xs">
                 Choose a country on the left to see all Message Hub languages available there.
               </p>
@@ -931,11 +1025,11 @@ function TutorialPage({ onBack }) {
 
   return (
     <section aria-labelledby="tutorial-title" className="space-y-6">
-      <nav className="flex flex-wrap items-center gap-3 text-xs text-slate-500">
+      <nav className="flex flex-wrap items-center gap-3 text-xs text-slate-500 dark:text-slate-400">
         <button
           type="button"
           onClick={onBack}
-          className="inline-flex items-center gap-1 rounded-full border border-slate-200 bg-white px-3 py-1 font-medium text-slate-600 hover:border-sky-500 hover:text-sky-700"
+          className="inline-flex items-center gap-1 rounded-full border border-slate-200 bg-white px-3 py-1 font-medium text-slate-600 hover:border-sky-500 hover:text-sky-700 dark:border-slate-600 dark:bg-slate-800 dark:text-slate-300 dark:hover:border-sky-400 dark:hover:text-sky-300"
         >
           <i className="ri-arrow-left-line text-xs" />
           Back to languages
@@ -944,28 +1038,28 @@ function TutorialPage({ onBack }) {
 
       <div className="flex flex-col gap-3 sm:flex-row sm:items-baseline sm:justify-between">
         <div>
-          <p className="text-xs font-semibold uppercase tracking-[0.16em] text-slate-500">
+          <p className="text-xs font-semibold uppercase tracking-[0.16em] text-slate-500 dark:text-slate-400">
             Tutorial
           </p>
           <h1
             id="tutorial-title"
-            className="mt-1 text-2xl font-semibold tracking-tight text-slate-900 sm:text-3xl"
+            className="mt-1 text-2xl font-semibold tracking-tight text-slate-900 dark:text-slate-100 sm:text-3xl"
           >
             How to use the Message Hub website
           </h1>
-          <p className="mt-2 max-w-2xl text-sm text-slate-600">
+          <p className="mt-2 max-w-2xl text-sm text-slate-600 dark:text-slate-400">
             Watch a quick walkthrough of how to choose your language, search the Message and Bible,
             and open the English Messages page.
           </p>
         </div>
-        <div className="inline-flex items-center rounded-full border border-slate-200 bg-white p-1 text-xs text-slate-600 shadow-sm">
+        <div className="inline-flex items-center rounded-full border border-slate-200 bg-white p-1 text-xs text-slate-600 shadow-sm dark:border-slate-700 dark:bg-slate-800 dark:text-slate-300">
           <button
             type="button"
             onClick={() => setLanguage('en')}
             className={`rounded-full px-4 py-1.5 transition ${
               language === 'en'
                 ? 'bg-sky-600 text-white shadow-sm'
-                : 'bg-transparent text-slate-600 hover:text-slate-900'
+                : 'bg-transparent text-slate-600 hover:text-slate-900 dark:text-slate-400 dark:hover:text-slate-100'
             }`}
           >
             English
@@ -976,7 +1070,7 @@ function TutorialPage({ onBack }) {
             className={`rounded-full px-4 py-1.5 transition ${
               language === 'es'
                 ? 'bg-sky-600 text-white shadow-sm'
-                : 'bg-transparent text-slate-600 hover:text-slate-900'
+                : 'bg-transparent text-slate-600 hover:text-slate-900 dark:text-slate-400 dark:hover:text-slate-100'
             }`}
           >
             Español
@@ -984,8 +1078,8 @@ function TutorialPage({ onBack }) {
         </div>
       </div>
 
-      <div className="rounded-2xl border border-slate-200 bg-white p-4 shadow-sm">
-        <div className="aspect-video w-full overflow-hidden rounded-xl bg-slate-900/5">
+      <div className="rounded-2xl border border-slate-200 bg-white p-4 shadow-sm dark:border-slate-700 dark:bg-slate-800">
+        <div className="aspect-video w-full overflow-hidden rounded-xl bg-slate-900/5 dark:bg-slate-950/50">
           <video
             key={videoSrc}
             src={videoSrc}
@@ -995,7 +1089,7 @@ function TutorialPage({ onBack }) {
             Your browser does not support the video tag.
           </video>
         </div>
-        <p className="mt-3 text-xs text-slate-500">
+        <p className="mt-3 text-xs text-slate-500 dark:text-slate-400">
           Choose English or Español above to watch the tutorial in your preferred language.
         </p>
       </div>

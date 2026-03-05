@@ -4,7 +4,7 @@
     <meta charset="utf-8" />
     <link rel="icon" href="%PUBLIC_URL%/favicon.ico" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <meta name="theme-color" content="#020617" />
+    <meta name="theme-color" content="#ffffff" />
     <meta
       name="description"
       content="Message Hub helps you search, read and study the Message and the Bible on the web, mobile and desktop."
@@ -27,6 +27,16 @@
 
     <!-- Tailwind CSS via CDN (mobile-first utility classes) -->
     <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+      tailwind.config = { darkMode: 'class' };
+    </script>
+    <script>
+      (function () {
+        try {
+          if (localStorage.getItem('mh-theme') === 'dark') document.documentElement.classList.add('dark');
+        } catch (e) {}
+      })();
+    </script>
 
     <!-- Simple icon library (Remix Icon) -->
     <link
