@@ -502,7 +502,7 @@ function EnglishMessagesPage({ onBack }) {
         </h2>
       </div>
 
-      <div className="grid gap-4 sm:grid-cols-3">
+      <div className="grid gap-4 sm:grid-cols-2">
         <article className="flex items-center gap-3 rounded-2xl border border-slate-200 bg-white p-4 shadow-sm dark:border-slate-700 dark:bg-slate-800">
           <div className="flex h-10 w-10 items-center justify-center rounded-full bg-sky-50 text-sky-600 dark:bg-sky-900/50 dark:text-sky-400">
             <i className="ri-printer-line text-lg" />
@@ -518,16 +518,7 @@ function EnglishMessagesPage({ onBack }) {
           </div>
           <div>
             <p className="text-sm font-semibold text-slate-900 dark:text-slate-100">Read Online</p>
-            <p className="text-xs text-slate-500 dark:text-slate-400">Read the English Messages directly in your browser.</p>
-          </div>
-        </article>
-        <article className="flex items-center gap-3 rounded-2xl border border-slate-200 bg-white p-4 shadow-sm dark:border-slate-700 dark:bg-slate-800">
-          <div className="flex h-10 w-10 items-center justify-center rounded-full bg-amber-50 text-amber-600 dark:bg-amber-900/50 dark:text-amber-400">
-            <i className="ri-volume-up-line text-lg" />
-          </div>
-          <div>
-            <p className="text-sm font-semibold text-slate-900 dark:text-slate-100">Audio</p>
-            <p className="text-xs text-slate-500 dark:text-slate-400">Access audio recordings of the Messages.</p>
+            <p className="text-xs text-slate-500 dark:text-slate-400">Read the English Messages directly in your browser. Audio will be available there when ready.</p>
           </div>
         </article>
       </div>
@@ -575,52 +566,50 @@ function EnglishMessagesPage({ onBack }) {
           </p>
         </div>
 
-        {/* Mobile: card list */}
-        <div className="space-y-3 md:hidden">
+        {/* Mobile: card list — optimized for touch and readability */}
+        <div className="space-y-4 md:hidden">
           {results.length === 0 ? (
-            <p className="px-1 py-2 text-center text-xs text-slate-500 dark:text-slate-400">
+            <p className="px-2 py-6 text-center text-sm text-slate-500 dark:text-slate-400">
               No messages found. Try a different reference, title or location.
             </p>
           ) : (
             results.map((msg) => (
               <article
                 key={msg.ref}
-                className="rounded-xl border border-slate-200 bg-slate-50 p-3 text-xs dark:border-slate-600 dark:bg-slate-900"
+                className="rounded-2xl border border-slate-200 bg-slate-50 p-4 shadow-sm dark:border-slate-600 dark:bg-slate-800"
               >
-                <div className="mb-1 flex items-center justify-between gap-2">
-                  <span className="font-mono text-[11px] font-semibold text-slate-700 dark:text-slate-300">
+                <div className="mb-3">
+                  <span className="inline-block rounded-full bg-slate-200 px-2.5 py-0.5 font-mono text-xs font-semibold text-slate-700 dark:bg-slate-700 dark:text-slate-300">
                     {msg.ref}
                   </span>
-                  <div className="flex gap-1.5">
-                    <button
-                      type="button"
-                      className="inline-flex h-7 w-7 items-center justify-center rounded-full border border-slate-200 bg-white dark:border-slate-600 dark:bg-slate-800"
-                      aria-label="View printable version"
-                      title="View printable book"
-                      onClick={() => openPrintModal(msg)}
-                    >
-                      <i className="ri-printer-line text-xs text-sky-600" />
-                    </button>
-                    <button
-                      type="button"
-                      className="inline-flex h-7 w-7 items-center justify-center rounded-full border border-slate-200 bg-white dark:border-slate-600 dark:bg-slate-800"
-                      aria-label="Read message online"
-                      title="Read message online"
-                    >
-                      <i className="ri-book-open-line text-xs text-emerald-600" />
-                    </button>
-                    <button
-                      type="button"
-                      className="inline-flex h-7 w-7 items-center justify-center rounded-full border border-slate-200 bg-white dark:border-slate-600 dark:bg-slate-800"
-                      aria-label="Listen to audio"
-                      title="Listen to audio"
-                    >
-                      <i className="ri-volume-up-line text-xs text-amber-500" />
-                    </button>
-                  </div>
                 </div>
-                <p className="text-[11px] font-semibold text-slate-900 dark:text-slate-100">{msg.title}</p>
-                <p className="mt-0.5 text-[11px] text-slate-500 dark:text-slate-400">{msg.location}</p>
+                <h3 className="text-base font-semibold leading-snug text-slate-900 dark:text-slate-100">
+                  {msg.title}
+                </h3>
+                <p className="mt-1 text-sm text-slate-600 dark:text-slate-400">
+                  {msg.location}
+                </p>
+                <div className="mt-4 flex gap-3 border-t border-slate-200 pt-3 dark:border-slate-600">
+                  <button
+                    type="button"
+                    className="inline-flex min-h-[44px] min-w-[44px] flex-1 items-center justify-center gap-2 rounded-xl border border-slate-200 bg-white font-medium text-slate-700 dark:border-slate-600 dark:bg-slate-900 dark:text-slate-200"
+                    aria-label="View printable version"
+                    title="View printable book"
+                    onClick={() => openPrintModal(msg)}
+                  >
+                    <i className="ri-printer-line text-lg text-sky-600" />
+                    <span className="text-sm">Print</span>
+                  </button>
+                  <button
+                    type="button"
+                    className="inline-flex min-h-[44px] min-w-[44px] flex-1 items-center justify-center gap-2 rounded-xl border border-slate-200 bg-white font-medium text-slate-700 dark:border-slate-600 dark:bg-slate-900 dark:text-slate-200"
+                    aria-label="Read message online"
+                    title="Read message online"
+                  >
+                    <i className="ri-book-open-line text-lg text-emerald-600" />
+                    <span className="text-sm">Read</span>
+                  </button>
+                </div>
               </article>
             ))
           )}
@@ -677,14 +666,6 @@ function EnglishMessagesPage({ onBack }) {
                           >
                             <i className="ri-book-open-line text-sm text-emerald-600" />
                           </button>
-                          <button
-                            type="button"
-                            className="inline-flex h-8 w-8 items-center justify-center rounded-full border border-slate-200 bg-white hover:border-slate-300 dark:border-slate-600 dark:bg-slate-800 dark:hover:border-slate-500"
-                            aria-label="Listen to audio"
-                            title="Listen to audio"
-                          >
-                            <i className="ri-volume-up-line text-sm text-amber-500" />
-                          </button>
                         </div>
                       </td>
                     </tr>
@@ -698,7 +679,7 @@ function EnglishMessagesPage({ onBack }) {
 
       {printModalOpen && printMessage && (
         <div
-          className="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/40 px-4 dark:bg-slate-950/60"
+          className="fixed inset-0 z-50 flex flex-col bg-white dark:bg-slate-900 md:flex-row md:items-center md:justify-center md:bg-slate-900/40 md:px-4 md:dark:bg-slate-950/60"
           onClick={(e) => {
             if (e.target === e.currentTarget) {
               closePrintModal();
@@ -706,13 +687,14 @@ function EnglishMessagesPage({ onBack }) {
           }}
         >
           <div
-            className="w-full max-w-2xl rounded-2xl bg-white shadow-xl dark:border dark:border-slate-700 dark:bg-slate-900"
+            className="flex h-full w-full flex-col bg-white dark:bg-slate-900 md:h-auto md:max-h-[90vh] md:max-w-2xl md:rounded-2xl md:shadow-xl md:dark:border md:dark:border-slate-700"
             role="dialog"
             aria-modal="true"
             aria-labelledby="print-options-title"
+            onClick={(e) => e.stopPropagation()}
           >
-            <div className="flex items-start justify-between gap-3 border-b border-slate-200 px-5 py-4 dark:border-slate-700">
-              <div>
+            <div className="flex flex-shrink-0 items-start justify-between gap-3 border-b border-slate-200 px-4 py-4 dark:border-slate-700 md:px-5">
+              <div className="min-w-0 flex-1">
                 <h3 id="print-options-title" className="text-base font-semibold text-slate-900 dark:text-slate-100">
                   Print book options
                 </h3>
@@ -723,13 +705,13 @@ function EnglishMessagesPage({ onBack }) {
               <button
                 type="button"
                 onClick={closePrintModal}
-                className="inline-flex h-8 w-8 items-center justify-center rounded-full border border-slate-200 text-slate-500 hover:border-slate-300 hover:text-slate-700 dark:border-slate-600 dark:text-slate-400 dark:hover:border-slate-500 dark:hover:text-slate-200"
+                className="inline-flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-full border border-slate-200 text-slate-500 hover:border-slate-300 hover:text-slate-700 dark:border-slate-600 dark:text-slate-400 dark:hover:border-slate-500 dark:hover:text-slate-200"
                 aria-label="Close"
               >
-                <i className="ri-close-line text-sm" />
+                <i className="ri-close-line text-lg" />
               </button>
             </div>
-            <div className="max-h-[70vh] space-y-4 overflow-y-auto px-5 py-4 text-sm">
+            <div className="min-h-0 flex-1 space-y-4 overflow-y-auto px-4 py-4 text-sm md:max-h-[70vh] md:flex-none md:px-5">
               <div>
                 <p className="mb-2 text-xs font-semibold uppercase tracking-[0.14em] text-slate-500 dark:text-slate-400">
                   Metric paper sizes
@@ -810,24 +792,24 @@ function EnglishMessagesPage({ onBack }) {
                 </div>
               </div>
             </div>
-            <div className="flex items-center justify-between gap-3 border-t border-slate-200 px-5 py-3 dark:border-slate-700">
-              <p className="text-xs text-slate-500 dark:text-slate-400">
+            <div className="flex flex-shrink-0 flex-col gap-3 border-t border-slate-200 px-4 py-4 dark:border-slate-700 md:flex-row md:items-center md:justify-between md:px-5 md:py-3">
+              <p className="text-sm text-slate-500 dark:text-slate-400">
                 Selected:{' '}
                 <span className="font-medium text-slate-700 dark:text-slate-200">
                   {getPrintOptionLabel(selectedPrintOption)}
                 </span>
               </p>
-              <div className="flex gap-2">
+              <div className="flex gap-3">
                 <button
                   type="button"
                   onClick={closePrintModal}
-                  className="inline-flex items-center justify-center rounded-full border border-slate-200 px-3 py-1.5 text-xs font-medium text-slate-600 hover:border-slate-300 dark:border-slate-600 dark:text-slate-300 dark:hover:border-slate-500"
+                  className="min-h-[44px] flex-1 rounded-xl border border-slate-200 px-4 py-2.5 text-sm font-medium text-slate-600 hover:border-slate-300 dark:border-slate-600 dark:text-slate-300 dark:hover:border-slate-500 md:flex-none md:min-h-0 md:flex-initial md:rounded-full md:py-1.5 md:text-xs"
                 >
                   Cancel
                 </button>
                 <button
                   type="button"
-                  className="inline-flex items-center justify-center rounded-full bg-sky-600 px-4 py-1.5 text-xs font-semibold text-white shadow-sm hover:bg-sky-500"
+                  className="min-h-[44px] flex-1 rounded-xl bg-sky-600 px-4 py-2.5 text-sm font-semibold text-white shadow-sm hover:bg-sky-500 md:flex-none md:min-h-0 md:flex-initial md:rounded-full md:py-1.5 md:text-xs"
                 >
                   Continue
                 </button>
